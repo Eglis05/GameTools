@@ -1,6 +1,6 @@
 import requests
 
-top_amount = 236
+top_amount = 71
 
 if __name__ == "__main__":
     link = "https://technotal.com/shinobi_warfare/ranking-arena.php"
