@@ -4,10 +4,12 @@ import os
 import sys
 import undetected_chromedriver as uc
 
-clan_id = 110
+clan_id = 110 #ZE: 110, RUH: 113, RG:207
 
 one_interval = 60
 values = [1000, 1, 3, 5, 10]
+names = ["total gain", "last 1 min"]
+names.extend([f"last {x} mins" for x in values[2:]])
 driver = uc.Chrome(driver_executable_path="/home/eglis/Downloads/chromedriver_linux64/chromedriver", use_subprocess=True)
 link = "https://ninjalegends.net/detail_clan.php?clan_id=" + str(clan_id)
 driver.get(link)
@@ -46,14 +48,20 @@ def table(initial_rep, total_rep, changes):
     for i in range(len(sorted_names)):
         char_name = sorted_names[i]
         print('|{0:3s} | {1:20s} | {2:10d} | {3:8d} | {4:9d} | {5:6d} | {6:6d} | {7:7d} | {8:7d}'.format(f"{i+1}", char_name, initial_rep[char_name], total_rep[char_name], changes["total gain"][char_name], changes[f"last {values[1]} min"][char_name], changes[f"last {values[2]} mins"][char_name], changes[f"last {values[3]} mins"][char_name], changes[f"last {values[4]} mins"][char_name]))
+    if sys.platform.startswith('win'):
+        sys.stdout.flush()
 
-def update_burnlist(burnlist, old_burnlist):
+def update_burnlist(burnlist, old_burnlist, burntime, changes):
     change = {}
     for item in burnlist:
         if item not in old_burnlist.keys():
             old_burnlist[item] = 0
+            for i in values:
+                burntime[i][item] = 0
+            for i in names:
+                changes[i][item] = 0
         change[item] = burnlist[item] - old_burnlist[item]
-    return change
+    return change, burntime, changes
 
 if __name__ == "__main__":
     start = time.time()
@@ -61,14 +69,12 @@ if __name__ == "__main__":
     old_burntime = {}
     for i in values:
         old_burntime[i] = start_players.copy()
-    names = ["total gain", "last 1 min"]
-    names.extend([f"last {x} mins" for x in values[2:]])
     change = {}
     for name in names:
         change[name] = {k: 0 for k in old_burntime[values[0]]}
     counter = 0
     while True:
-        time.sleep(one_interval - (time.time() - start))
+        time.sleep(max(one_interval - (time.time() - start), 0))
         start = time.time()
         counter += 1
         try:
@@ -77,7 +83,8 @@ if __name__ == "__main__":
             burnlist = old_burntime
         for i in range(len(values)):
             if counter % values[i] == 0 or i == 0:
-                change[names[i]] = update_burnlist(burnlist, old_burntime[values[i]])
+                change_i, old_burntime, change = update_burnlist(burnlist, old_burntime[values[i]], old_burntime, change)
+                change[names[i]] = change_i
                 if i != 0:
                     old_burntime[values[i]] = burnlist
         table(old_burntime[values[0]], burnlist, change)    
