@@ -3,8 +3,13 @@ from bs4 import BeautifulSoup
 import time
 import os
 
+import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument("--id", help="Clan ID", default=4064, type=int)
+args = parser.parse_args()
 
-clan_id = 4064 #RUH: 5555, BB: 102, ZE: 4064, LPC: 8029, OOC: 6119
+
+clan_id = args.id #RUH: 5555, BB: 102, ZE: 4064, LPC: 8029, OOC: 6119
 one_interval = 60
 values = [1000, 1, 5, 10, 30]
 names = ["total gain", "last 1 min"]

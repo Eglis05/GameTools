@@ -4,7 +4,12 @@ import os
 import sys
 import undetected_chromedriver as uc
 
-clan_id = 110 #ZE: 110, RUH: 113, RG:207
+import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument("--id", help="Clan ID", default=110, type=int)
+args = parser.parse_args()
+
+clan_id = args.id #ZE: 110, RUH: 113, RG:207
 
 one_interval = 60
 values = [1000, 1, 3, 5, 10]

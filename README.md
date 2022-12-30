@@ -1,4 +1,8 @@
 # SW
-Scripts created for Shinobi Warfare
+Scripts created for Shinobi Warfare and Ninja Legends.
 
-#TODO: Add argument so I dont need to nano it every tine, update README
+## Run
+Most of the tools have an argument "--id" so that you choose the id of the clan.
+
+## Packing for distribution
+pyarmor pack --clean -e "--onefile " IF.py
