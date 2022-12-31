@@ -53,8 +53,7 @@ def table(initial_rep, total_rep, changes):
     for i in range(len(sorted_names)):
         char_name = sorted_names[i]
         print('|{0:3s} | {1:20s} | {2:10d} | {3:8d} | {4:9d} | {5:6d} | {6:6d} | {7:7d} | {8:7d}'.format(f"{i+1}", char_name, initial_rep[char_name], total_rep[char_name], changes["total gain"][char_name], changes[f"last {values[1]} min"][char_name], changes[f"last {values[2]} mins"][char_name], changes[f"last {values[3]} mins"][char_name], changes[f"last {values[4]} mins"][char_name]))
-    if sys.platform.startswith('win'):
-        sys.stdout.flush()
+    sys.stdout.flush()
 
 def update_burnlist(burnlist, old_burnlist, burntime, changes):
     change = {}

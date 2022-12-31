@@ -2,6 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 import time
 import os
+import sys
 
 import argparse
 parser = argparse.ArgumentParser()
@@ -37,7 +38,10 @@ def get_reps():
 
 def table(initial_rep, total_rep, changes):
     sorted_names = list(dict(sorted(changes["total gain"].items(), key=lambda item: item[1], reverse=True)).keys())
-    os.system('clear')
+    if sys.platform.startswith('win'):
+        os.system('cls')
+    else:
+        os.system('clear')
     print('|{0:3s} | {1:20s} | {2:10s} | {3:8s} | {4:9s} | {5:6s} | {6:6s} | {7:7s} | {8:7s}'.format("Pos", "Char Name", "initialRep", "totalRep", "totalGain", f"last {values[1]}", f"last {values[2]}", f"last {values[3]}", f"last {values[4]}"))
     line = "-" * 102
     print(line , sep="", end = "\n")
@@ -46,6 +50,7 @@ def table(initial_rep, total_rep, changes):
     for i in range(len(sorted_names)):
         char_name = sorted_names[i]
         print('|{0:3s} | {1:20s} | {2:10d} | {3:8d} | {4:9d} | {5:6d} | {6:6d} | {7:7d} | {8:7d}'.format(f"{i+1}", char_name, initial_rep[char_name], total_rep[char_name], changes["total gain"][char_name], changes[f"last {values[1]} min"][char_name], changes[f"last {values[2]} mins"][char_name], changes[f"last {values[3]} mins"][char_name], changes[f"last {values[4]} mins"][char_name]))
+    sys.stdout.flush()
 
 def update_burnlist(burnlist, old_burnlist, burntime, changes):
     change = {}
