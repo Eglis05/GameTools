@@ -27,7 +27,8 @@ def get_reps():
         name = td_values[i].text
         while name in players.keys():
             name = name + " Jr."
-
+        if name.find("@") != -1:
+            name = "M@D@R@"
         rep = td_values[i + 2].text
         players[name] = int(rep)
     return players
