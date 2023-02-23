@@ -2,7 +2,9 @@ from bs4 import BeautifulSoup
 import time
 import os
 import sys
-import undetected_chromedriver as uc
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.options import Options
 from urllib.request import urlopen
 from datetime import datetime
 import csv
@@ -13,9 +15,12 @@ one_interval = 30
 values = [1000, 1, 2, 10, 20]
 names = ["total gain", "last 30 secs", "last 1 min"]
 names.extend([f"last {x//2} mins" for x in values[3:]])
-driver = uc.Chrome(use_subprocess=True)
-link = "https://ninjalegends.net/detail_clan.php?clan_id=" + str(clan_id)
+options = Options()
+options.headless = True
+driver = webdriver.Chrome(options=options)
+link = "https://ninjasage.id/en/leaderboards/clan"
 driver.get(link)
+time.sleep(3)
 
 dict_members = {}
 with open('members.csv', newline='') as csvfile:
@@ -26,21 +31,26 @@ time.sleep(4)
 
 def get_json(link):
     driver.get(link)
-    time.sleep(5)
+    time.sleep(3)
+    driver.find_element(By.ID, "clan-row-655").find_element(By.CLASS_NAME, "pointer").click()
+    time.sleep(1)
+    driver.find_elements(By.XPATH, "//select/option[3]")[1].click()
+    time.sleep(1)
     webp = driver.page_source
     soup = BeautifulSoup(webp, "html.parser")
-    return soup.find_all("td")
+    return soup.find_all("td")[93:]
 
 def get_reps():
     ranks = get_json(link)
     members = {}
-    for i in range(0, len(ranks), 3):
+    for i in range(0, len(ranks), 6):
         name = ranks[i].text
+        name = name[:name.find("[") - 1]
         while name in members.keys():
             name = name + " Jr."
         
-        rep = ranks[i+2].text
-        members[name] = int(rep)
+        rep = int(ranks[i+2].text.replace(".", ""))
+        members[name] = rep
     return members
 
 def table(initial_rep, total_rep, changes):
@@ -56,6 +66,8 @@ def table(initial_rep, total_rep, changes):
     print(line , sep="", end = "\n", flush=True)
     for i in range(len(sorted_names)):
         char_name = sorted_names[i]
+        if char_name not in dict_members:
+            dict_members[char_name] = ""
         print('|{0:3s} | {1:20s} | {2:20s} | {3:10d} | {4:8d} | {5:9d} | {6:12d} | {7:10d} | {8:11d} | {9:11d}'.format(f"{i+1}", char_name, dict_members[char_name], initial_rep[char_name], total_rep[char_name], changes["total gain"][char_name], changes[names[1]][char_name], changes[names[2]][char_name], changes[names[3]][char_name], changes[names[4]][char_name]), flush=True)
     sys.stdout.flush()
 
@@ -81,7 +93,7 @@ def check_validity():
     res = urlopen('http://just-the-time.appspot.com/')
     result = res.read().strip().decode('utf-8')
     today_date = datetime.strptime(result, '%Y-%m-%d %H:%M:%S')
-    if today_date >= datetime.strptime("2023-03-15", '%Y-%m-%d'):
+    if today_date >= datetime.strptime("2023-03-01", '%Y-%m-%d'):
         return False
     else:
         return True
