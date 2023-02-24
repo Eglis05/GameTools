@@ -113,17 +113,20 @@ if __name__ == "__main__":
             change[name] = {k: 0 for k in old_burntime[values[0]]}
         counter = 0
         while True:
-            time.sleep(max(one_interval - (time.time() - start), 0))
-            start = time.time()
-            counter += 1
             try:
-                burnlist = get_reps()
+                time.sleep(max(one_interval - (time.time() - start), 0))
+                start = time.time()
+                counter += 1
+                try:
+                    burnlist = get_reps()
+                except:
+                    burnlist = old_burntime[values[1]]
+                for i in range(len(values)):
+                    if counter % values[i] == 0 or i == 0:
+                        change_i, old_burntime, change = update_burnlist(burnlist, old_burntime[values[i]], old_burntime, change)
+                        change[names[i]] = change_i
+                        if i != 0:
+                            old_burntime[values[i]] = burnlist
+                table(old_burntime[values[0]], burnlist, change)
             except:
-                burnlist = old_burntime[values[1]]
-            for i in range(len(values)):
-                if counter % values[i] == 0 or i == 0:
-                    change_i, old_burntime, change = update_burnlist(burnlist, old_burntime[values[i]], old_burntime, change)
-                    change[names[i]] = change_i
-                    if i != 0:
-                        old_burntime[values[i]] = burnlist
-            table(old_burntime[values[0]], burnlist, change)
+                driver = webdriver.Chrome(options=options)
