@@ -11,7 +11,7 @@ import csv
 
 clan_id = 655 #RUH: 655
 clan_name = "RUH"
-availability_date = "2023-03-01"
+availability_date = "2023-05-01"
 
 one_interval = 30
 values = [1000, 1, 2, 10, 20]
@@ -34,11 +34,11 @@ time.sleep(4)
 
 def get_json(link):
     driver.get(link)
-    time.sleep(3)
+    time.sleep(7)
     driver.find_element(By.ID, "clan-row-" + str(clan_id)).find_element(By.CLASS_NAME, "pointer").click()
-    time.sleep(1)
+    time.sleep(3)
     driver.find_elements(By.XPATH, "//select/option[3]")[1].click()
-    time.sleep(1)
+    time.sleep(3)
     webp = driver.page_source
     soup = BeautifulSoup(webp, "html.parser")
     return soup.find_all("td")[93:]
